@@ -7,6 +7,57 @@ import random
 from PIL import Image
 from torch.utils.data import Dataset
 
+class FaceDataset(Dataset):
+    """
+        Dataset class for loading face images organized in validation folder.
+
+        Args: 
+            root_dir (str): Root directory containing validation images.
+            transform (callable): transform function to apply to the images.
+    """
+
+    def __init__(self, root_dir, transform = None):
+        self.root_dir = root_dir
+        self.transform = transform
+
+        # get all the identity folders
+        identities = [d for d in os.listdir(root_dir) if os.path.isdir(os.path.join(root_dir, d))]
+
+        # build image paths and labels
+        self.img_paths = []
+        self.labels = []
+
+        for idx, identity in enumerate(identities):
+            anchor_path = os.path.join(root_dir, identity)
+            anchor_imgs = [f for f in os.listdir(anchor_path) 
+                           if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
+
+            positive_path = os.path.join(anchor_path, 'distortion')
+            pos_imgs = [f for f in os.listdir(positive_path)
+                        if f.lower().endswith(('.jpg', '.png', '.jpeg'))]
+        
+            for img in anchor_imgs:
+                self.img_paths.append(os.path.join(anchor_path, img))
+
+                for img in pos_imgs:
+                    self.img_paths.append(os.path.join(positive_path, img))
+            
+                self.labels.append(idx)
+
+    def __len__(self):
+        return len(self.img_paths)
+    
+    def __getitem__(self, idx):
+        img_path = self.img_paths[idx]
+        label = self.labels[idx]
+
+        image = Image.open(img_path).convert('RGB')
+
+        if self.transform:
+            image = self.transform(image)
+        
+        return image, label, img_path
+
 class TripletDataset(Dataset):
     """
         Dataset that generates triplets (anchor, positive, negative) images.

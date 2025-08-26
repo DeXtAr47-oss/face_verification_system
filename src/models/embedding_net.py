@@ -5,7 +5,7 @@ Face embedding network using Resnet50 model backbone.
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torchvision.models import resnet50
+from torchvision.models import resnet50, ResNet50_Weights
 
 class FaceEmbeddingNet(nn.Module):
     """
@@ -20,7 +20,7 @@ class FaceEmbeddingNet(nn.Module):
     def __init__(self, embedding_dim = 128):
         super(FaceEmbeddingNet, self).__init__()
 
-        self.backbone = resnet50(pretrained = True)
+        self.backbone = resnet50(weights = ResNet50_Weights.IMAGENET1K_V1)
 
         self.backbone.fc = nn.Identity()
 

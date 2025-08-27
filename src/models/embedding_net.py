@@ -20,7 +20,7 @@ class FaceEmbeddingNet(nn.Module):
     def __init__(self, embedding_dim = 128):
         super(FaceEmbeddingNet, self).__init__()
 
-        self.backbone = resnet50(weights = ResNet50_Weights.IMAGENET1K_V1)
+        self.backbone = resnet50(weights = None)
 
         self.backbone.fc = nn.Identity()
 

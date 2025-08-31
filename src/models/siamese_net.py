@@ -12,7 +12,7 @@ class SiameseNet(nn.Module):
             embedding_dim (int): Dimension of output embedding vector
     """
 
-    def __init__(self, embedding_dim = 128):
+    def __init__(self, embedding_dim = 256):
         super(SiameseNet, self).__init__()
         self.embedding_net = FaceEmbeddingNet(embedding_dim=embedding_dim)
 

@@ -23,15 +23,15 @@ class FaceVerification:
         margin (float): margin for triplet loss 
         
     """
-    def __init__(self, embedding_dim = 128, device = torch.device('mps') if torch.backends.mps.is_available() else torch.device('cpu'), margin = 0.5):
+    def __init__(self, embedding_dim = 256, device = torch.device('mps') if torch.backends.mps.is_available() else torch.device('cpu'), margin = 0.5):
         self.embedding_dim = embedding_dim
         self.device = device
 
         # initilize the model
-        self.model = SiameseNet().to(self.device)
+        self.model = SiameseNet(embedding_dim=embedding_dim).to(self.device)
 
         #use pytorch's built in TripletMarginLoss 
-        self.triplet_loss = nn.TripletMarginLoss(margin=margin, p = 2, reduction = "mean")
+        self.triplet_loss = nn.TripletMarginLoss(margin=margin, p = 2, eps = 1e-6, swap = True, reduction = "mean")
 
         # use transformation for training
         self.train_transform = train_transformation()
@@ -39,7 +39,7 @@ class FaceVerification:
         # use transformation for validation
         self.val_transform = val_transformation()
 
-    def train(self, train_dir, val_dir, epochs = 5, batch_size = 32, lr = 0.01):
+    def train(self, train_dir, val_dir, epochs = 5, batch_size = 16, lr = 0.001):
         """
             Main training funtion to train the siamese network model
 
@@ -59,8 +59,8 @@ class FaceVerification:
         train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=0)
 
         #optimizer and scheduler
-        optimizer = torch.optim.Adam(self.model.parameters(), lr = lr, weight_decay = 1e-4)
-        scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size = 15, gamma = 0.5)
+        optimizer = torch.optim.Adam(self.model.parameters(), lr = lr)
+        scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size = 1, gamma = 0.5)
 
         #training loop
         self.model.train()
@@ -103,7 +103,7 @@ class FaceVerification:
 
             print(f"Epoch {e + 1}/{epochs} completed, loss: {avg_loss: .4f}")
 
-            if val_dir and (e + 1) % 5 == 0:
+            if val_dir:
                 val_acc = self.validate(val_dir)
                 print(f'validation accuracy: {val_acc: .4f}')
 

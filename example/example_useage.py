@@ -8,9 +8,9 @@ def main():
     train_dir = "/Users/pritamdas/python/dataset/Task_B/train"
     val_dir = "/Users/pritamdas/python/dataset/Task_B/val"
 
-    losses = system.train(train_dir=train_dir, val_dir=val_dir)
+    losses = system.train(train_dir=train_dir, val_dir=val_dir, epochs=2)
 
-    system.save_model(file_path="/Users/pritamdas/python/projects/face_verification_system/model")
+    system.save_model(file_path="/Users/pritamdas/python/projects/face_verification_system/model/resnet50.pth")
 
 if __name__ == "__main__":
     main()

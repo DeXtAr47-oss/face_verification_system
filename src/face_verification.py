@@ -23,9 +23,9 @@ class FaceVerification:
         margin (float): margin for triplet loss 
         
     """
-    def __init__(self, embedding_dim = 256, device = torch.device('mps') if torch.backends.mps.is_available() else torch.device('cpu'), margin = 0.5):
+    def __init__(self, embedding_dim = 256, device = 'mps' if torch.backends.mps.is_available() else 'cpu', margin = 0.5):
         self.embedding_dim = embedding_dim
-        self.device = device
+        self.device = torch.device(device)
 
         # initilize the model
         self.model = SiameseNet(embedding_dim=embedding_dim).to(self.device)
@@ -59,10 +59,10 @@ class FaceVerification:
         train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=0)
 
         #optimizer and scheduler
-        optimizer = torch.optim.Adam(self.model.parameters(), lr = lr)
+        optimizer = torch.optim.Adam(self.model.parameters(), weight_decay=1e-6, lr = lr)
         scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size = 1, gamma = 0.5)
 
-        #training loop
+        #training loop  
         self.model.train()
         train_loss = []
 
@@ -95,13 +95,13 @@ class FaceVerification:
                 epoch_loss += loss.item()
                 num_batches += 1
 
-                progress_bar.set_postfix({"loss": f"{loss.item(): .4f}"})
+                progress_bar.set_postfix({"loss": f"{loss.item(): .10f}"})
             
             avg_loss = epoch_loss / num_batches
             train_loss.append(avg_loss)
             scheduler.step()
 
-            print(f"Epoch {e + 1}/{epochs} completed, loss: {avg_loss: .4f}")
+            print(f"Epoch {e + 1}/{epochs} completed, loss: {avg_loss: .10f}")
 
             if val_dir:
                 val_acc = self.validate(val_dir)
@@ -236,3 +236,51 @@ class FaceVerification:
         checkpoint = torch.load(file_path, map_location=self.device)
         self.model.load_state_dict(checkpoint['model_state_dict'])
         print("model loaded from: {file_path}")
+
+    def evaluate_test_set(self, test_dir, identity_folder_dir, threshold = 0.5):
+        """
+        Evalueate the complete test set against identity folders
+
+        Args:
+            test_dir (str): directory containing all the test images
+            identity_folder (str): directory containing identity folders
+            threshold (float): similarity threshold
+
+        Returns: 
+            list: list of results for each test set 
+        """
+        results = []
+
+        test_images = [f for f in os.listdir(test_dir)
+                       if f.lower().endswith(('.png', '.jpg', 'jpeg'))]
+        
+        for test_img in tqdm(test_images, desc="evaluating test set"):
+            test_path = os.path.join(test_dir, test_img)
+
+            # try to match against identity folder
+            best_match = None
+            best_confidence = 0
+            best_distance = float('inf')
+
+            for identity_folder in os.listdir(identity_folder_dir):
+                identity_path = os.path.join(identity_folder_dir, identity_folder)
+
+                if not os.path.isdir(identity_path):
+                    continue
+
+                is_match, confidence, distance = self.verify_identity(test_path, identity_path, threshold)
+
+                if is_match and confidence > best_confidence:
+                    best_match = identity_folder
+                    best_confidence = confidence
+                    best_distance = distance
+
+            result = {
+                "test_image": test_img,
+                "predicted_identity": best_match,
+                "distance": best_distance,
+                "is_match": best_match is not None
+            }
+            results.append(result)
+
+        return results

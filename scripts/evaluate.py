@@ -15,7 +15,7 @@ def main():
     parser.add_argument("--identity-dir", type=str, required=True,
                         help="directory containing identity folders")
     
-    parser.add_argument("--threshold", type=float, required=0.5,
+    parser.add_argument("--threshold", type=float, required=0.6,
                         help="similarity thershold")
     
     parser.add_argument("--output-file", type=str, required=True, 

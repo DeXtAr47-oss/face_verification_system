@@ -237,7 +237,7 @@ class FaceVerification:
         self.model.load_state_dict(checkpoint['model_state_dict'])
         print("model loaded from: {file_path}")
 
-    def evaluate_test_set(self, test_dir, identity_folder_dir, threshold = 0.5):
+    def evaluate_test_set(self, test_dir, identity_folder_dir, threshold = 0.6):
         """
         Evalueate the complete test set against identity folders
 

@@ -1,4 +1,4 @@
-## Face verification system 
+# Face verification system 
 A production ready face verification system using deep learning metric and Siamese network for robust identity verification. Built with PyTorch and designed for real world applications. This project is made for verifying distorted images with the anchor images for a given dataset, for more reference about the siamese network refer to the [paper](https://www.cs.cmu.edu/~rsalakhu/papers/oneshot1.pdf).
 
 # Features
@@ -9,8 +9,8 @@ A production ready face verification system using deep learning metric and Siame
 * __Production ready__ - Modular code structure comprehensive testing.
 * __Comprehensive__ - Training validation and batch evaluation tools.
 
-# 🚀 Quick Start
-# Installation
+## 🚀 Quick Start
+## Installation
 ```bash
     # clone this repo
     git clone https://github.com/DeXtAr47-oss/face_verification_system
@@ -19,7 +19,7 @@ A production ready face verification system using deep learning metric and Siame
     pip install -r requirements.txt
 ```
 
-# Basic Useage
+## Basic Useage
 ```python
 
     from src import face_verification
@@ -54,23 +54,23 @@ A production ready face verification system using deep learning metric and Siame
     print(f"Match: {is_match}, Confidence: {confidence: .3f}, Distance: {min_distance: .3f}")
 ```
 
-# Data Organization
+## Data Organization
 data/
 ├── train/
-│   ├── person_001/
-│   │   ├── anchor.jpg
-│   │   └── distortion/
-│   │       ├── distortion_001.jpg
-│   │       ├── distortion_002.jpg
-│   │       └── ...
-│   ├── person_002/
-│   │   ├── anchor.jpg
-│   │   └── distortion/
-│   │       ├── distortion_001.jpg
-│   │       └── ...
-│   └── ...
+│ ├── person_001/
+│ │ ├── anchor.jpg
+│ │ └── distortion/
+│ │ ├── distortion_001.jpg
+│ │ ├── distortion_002.jpg
+│ │ └── ...
+│ ├── person_002/
+│ │ ├── anchor.jpg
+│ │ └── distortion/
+│ │ ├── distortion_001.jpg
+│ │ └── ...
+│ └── ...
 ├── validation/
-│   └── (same structure as train)
+│ └── (same structure as train)
 
 
     

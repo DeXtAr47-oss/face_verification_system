@@ -55,6 +55,7 @@ A production ready face verification system using deep learning metric and Siame
 ```
 
 ## Data Organization
+The `TripletDataset` class and `FaceDataset` class expect the follwing folder structure to train on the distotion images.
 ```text
     data/
     ├── train/
@@ -71,8 +72,46 @@ A production ready face verification system using deep learning metric and Siame
     │ │ └── ...
     │ └── ...
     ├── validation/
-    │ └── (same structure as train)
+       └── (same structure as train)
+```
+## 🛠️ Command line useage
+# Training
+```bash
+    python scripts/train.py \
+        --train-dir data/train \
+        --val-dir  data/validation \
+        --epochs 5 \
+        --batch-size 16 \
+        --lr 0.001 \
+        --embedding-dim 256 \
+        --output-dir models/
 ```
 
+# Single Image Verification
+```bash
+    python scripts/inference.py \
+        --model-path models/face_verification_model.pth \
+        --test-image test_image.jpg \
+        --identity-folder identity_folder \
+        --threshold 0.6
+```
+
+# Batch Evaluation
+```bash
+    python scripts/evaluate.py \
+        --model-path models/face-verification.pth \
+        --test-dir data/test
+        --identity-dir data/identities
+```
+
+# 🏛️ Architecturre
+# Model Components
+* __1. Embedding_net__ `(src\models\embedding_net.py)`
+    * ResNet50 backbone.
+    * Custom embedding layers: 2048 -> 512 -> 256.
+    * L2 normalization for unit sphere embeddings.
+
+* __2. SiameseNet__ `(src\models\siamese_ent.py)`
+ 
 
     

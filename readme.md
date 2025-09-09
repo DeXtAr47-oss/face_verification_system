@@ -55,22 +55,24 @@ A production ready face verification system using deep learning metric and Siame
 ```
 
 ## Data Organization
-data/
-├── train/
-│ ├── person_001/
-│ │ ├── anchor.jpg
-│ │ └── distortion/
-│ │ ├── distortion_001.jpg
-│ │ ├── distortion_002.jpg
-│ │ └── ...
-│ ├── person_002/
-│ │ ├── anchor.jpg
-│ │ └── distortion/
-│ │ ├── distortion_001.jpg
-│ │ └── ...
-│ └── ...
-├── validation/
-│ └── (same structure as train)
+```text
+    data/
+    ├── train/
+    │ ├── person_001/
+    │ │ ├── anchor.jpg
+    │ │ └── distortion/
+    │ │ ├── distortion_001.jpg
+    │ │ ├── distortion_002.jpg
+    │ │ └── ...
+    │ ├── person_002/
+    │ │ ├── anchor.jpg
+    │ │ └── distortion/
+    │ │ ├── distortion_001.jpg
+    │ │ └── ...
+    │ └── ...
+    ├── validation/
+    │ └── (same structure as train)
+```
 
 
     

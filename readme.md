@@ -104,14 +104,33 @@ The `TripletDataset` class and `FaceDataset` class expect the follwing folder st
         --identity-dir data/identities
 ```
 
-# 🏛️ Architecturre
+# 🏛️ Architecture
 # Model Components
-* __1. Embedding_net__ `(src\models\embedding_net.py)`
+* __Embedding_net__ `(src/models/embedding_net.py)`
     * ResNet50 backbone.
     * Custom embedding layers: 2048 -> 512 -> 256.
     * L2 normalization for unit sphere embeddings.
 
-* __2. SiameseNet__ `(src\models\siamese_ent.py)`
+* __SiameseNet__ `(src/models/siamese_ent.py)`
+    * Shared weights for consistent embeddings.
+    * Dual input processing for pairs.
+    * Single embedding extraction method.
+
+* __Faceverification__ `(src/face_verification.py)`
+    * Main system orchestrating training and inference.
+    * Uses PyTorch's `nn.TripletMrginLoss`.
+    * Comprehensive validation and evaluation methods.
+
+# Data Pipeline
+1. __TripletDataset__`(src/data/datasets.py)`
+    * Automatically generates (anchor, positive, negative) triplets.
+    * Handles identity folders with minimum requirements.
+    * Dynamic triplet during training.
+
+2. __FaceDataset__ `(src/data/datasets.py)`
+    * Standard dataset for validation and training.
+    * Identity-based organization.
+    * Robust image loading with error handling.
  
 
     

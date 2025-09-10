@@ -75,7 +75,7 @@ The `TripletDataset` class and `FaceDataset` class expect the follwing folder st
        └── (same structure as train)
 ```
 ## 🛠️ Command line useage
-# Training
+## Training
 ```bash
     python scripts/train.py \
         --train-dir data/train \
@@ -87,7 +87,7 @@ The `TripletDataset` class and `FaceDataset` class expect the follwing folder st
         --output-dir models/
 ```
 
-# Single Image Verification
+## Single Image Verification
 ```bash
     python scripts/inference.py \
         --model-path models/face_verification_model.pth \
@@ -96,7 +96,7 @@ The `TripletDataset` class and `FaceDataset` class expect the follwing folder st
         --threshold 0.6
 ```
 
-# Batch Evaluation
+## Batch Evaluation
 ```bash
     python scripts/evaluate.py \
         --model-path models/face-verification.pth \
@@ -104,8 +104,8 @@ The `TripletDataset` class and `FaceDataset` class expect the follwing folder st
         --identity-dir data/identities
 ```
 
-# 🏛️ Architecture
-# Model Components
+## 🏛️ Architecture
+## Model Components
 * __Embedding_net__ `(src/models/embedding_net.py)`
     * ResNet50 backbone.
     * Custom embedding layers: 2048 -> 512 -> 256.
@@ -121,7 +121,7 @@ The `TripletDataset` class and `FaceDataset` class expect the follwing folder st
     * Uses PyTorch's `nn.TripletMrginLoss`.
     * Comprehensive validation and evaluation methods.
 
-# Data Pipeline
+## Data Pipeline
 1. __TripletDataset__`(src/data/datasets.py)`
     * Automatically generates (anchor, positive, negative) triplets.
     * Handles identity folders with minimum requirements.
@@ -131,6 +131,101 @@ The `TripletDataset` class and `FaceDataset` class expect the follwing folder st
     * Standard dataset for validation and training.
     * Identity-based organization.
     * Robust image loading with error handling.
+
+3. __Transforms__ `(src/data/transforms.py)`
+    * Training: Data augmentation (flip, rotation, color jitter).
+    * Validation: Standard preprocessing only.
+    * ImagNet normalizaion.
+
+## ⚙️ Key classes and methods
+## Faceverification
+```python
+    class face_verification:
+        def __init__(self, embedding_dim=256, device="auto", margin=0.5)
+        def train(self, train_dir, val_dir, epoch=5, lr=0.001)
+        def validate(self, val_dir, threshold=0.6)
+        def save_model(self, filepath)
+        def load_model(self, filepath)
+        def evaluate_test_set(self, test_dir, identity_folder_dir, threshold=0.6)
+```
+## Key features
+* __Triplet Loss__ `(nn.TripletMarginLoss(margin=0.5, p=2, reduction='mean'))`
+* __Progressive training__: Learning rate scheduling with StepLR.
+* __Validation__: Automatic positive/negative pair generation for accuracy measurement.
+* __Batch Processing__: Efficient batch inference with progress tracking.
+* __Model Persistence__: Save/Load functionallity with metadata.
+
+## 📈 Example Useage
+__Example 1__: Basic training and inference
+```python
+    from src import face_verification
+
+    # initilize and train
+    system = face_verification(embedding_dim=256)
+    losses = system.train('data/train', 'data/val', epochs=10)
+    system.save_model('path/to/model.pth')
+
+    # load and verify
+    system = face_verification()
+    system.load_model('path/to/model.pth')
+    result = system.verify_identity('test.jpg', 'person1_folder/', threshold=0.6)
+    print(f"Result: {result}")
+```
+
+__Example 2__: Batch evaluation
+```python
+
+    # evaluate entire test set
+    results = system.evaluate_test_set(
+        test_dir = "test/image",
+        identity_folder_dir = "identity/",
+        threshold = 0.6
+    )
+
+    # calculate accuracy
+    total = len(results)
+    matched = sum(1 for r in results if r['is_match'])
+    accuracy = matched/total
+    print(f"accuracy: {accuracy: .3f}")
+```
+
+## Configuration Options
+## Model Parameters
+* `embedding_dim`: 64, 128, 256, 512 (default 256)
+* `margin`: 0.1-1.0 for triplet loss (default: 0.5)
+* `device`: 'cuda', 'mps', 'cpu', 'auto' (default: auto='mps')
+
+## Training Parameters
+* `epochs`: Number of training epochs (default: 5)
+*  `batch_size`: Training batch size (default: 16)
+* `lr`: Learning rate (default: 0.001)
+
+## Inference parameters
+* `threshold`: Similarity threshold for matching (default: 0.6)
+    * Lower = stricher match.
+    * Higher = more lenient matching.
+
+## Requirments
+```bash
+    torch>=1.9.0
+    torchvision>=0.10.0
+    numpy>=1.21.0
+    opencv-python>=4.5.0
+    Pillow>=8.3.0
+    scikit-learn>=1.0.0
+    matplotlib>=3.4.0
+    tqdm>=4.62.0
+```
+## 🤝 Contributing
+1. Fork the repository.
+2. Create a feature branch (`git checkout -b feature/new-feature`)
+3. Commit changes (`git commit -am 'add new feature'`)
+4. Push to branch (`git push origin feature/new-feature`)
+5. Create Pull requests.
+
+## If this project helps you please give it a star ⭐
+
+
  
 
     
